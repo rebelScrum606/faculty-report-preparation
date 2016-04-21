@@ -10,4 +10,5 @@ class Instructor < ActiveRecord::Base
   def self.select_menu_options
     order(:name).pluck(:name, :id).push([ "New instructor...", 0 ])
   end
+  
 end

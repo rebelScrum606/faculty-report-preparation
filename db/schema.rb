@@ -13,6 +13,13 @@
 
 ActiveRecord::Schema.define(version: 20160418150933) do
 
+  create_table "course_names", force: true do |t|
+    t.string   "subject_course"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "evaluations", force: true do |t|
     t.string   "term"
     t.string   "subject"

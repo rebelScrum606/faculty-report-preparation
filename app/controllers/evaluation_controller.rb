@@ -57,7 +57,7 @@ class EvaluationController < ApplicationController
   def export
     term = params.require(:id)
     evaluation_groups = Evaluation.no_missing_data.where(term: term).default_sorted_groups
-    send_data EvaluationReportExporter.new(evaluation_groups).generate, filename: "#{term}_evaluation_report_#{Time.now.strftime('%F')}"
+    send_data EvaluationReportExporter.new(evaluation_groups).generate, filename: "#{term}_evaluation_report_#{Time.now.strftime('%F')}.csv"
   end
 
   def edit
