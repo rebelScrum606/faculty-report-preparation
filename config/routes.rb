@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
-  match "/admin", to: "admin#index", :via => 'get'
-  
+  get "/admin", to: "admin#index"
+
   devise_for :users
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   # Example resource route (maps HTTP verbs to controller actions automatically):
 
   root :to => 'home#index'
-  
+
   resources :admin do
     get 'change_to_admin'
     get 'change_to_guest'

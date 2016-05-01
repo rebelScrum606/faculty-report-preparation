@@ -1,7 +1,7 @@
 class Evaluation < ActiveRecord::Base
   belongs_to :instructor
   validates_associated :instructor
-  
+
   # needed for rolify
   resourcify
 

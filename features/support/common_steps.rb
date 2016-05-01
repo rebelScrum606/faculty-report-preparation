@@ -9,6 +9,21 @@ Given(/^User is authenticated$/)do
   click_button "Log in"
 end
 
+Given(/^There exists 4 users assigned admin, readWrite, readOnly, and guest as roles$/) do
+  Role.new.readable_roles.each do |key, value|
+    user = User.new(:email => key.to_s+"@man.net", :password => 'secretpass', :password_confirmation => 'secretpass')
+    user.add_role key
+    user.save!
+  end
+end
+
+Given(/^User is of class (.+)$/) do |userClass|
+  visit '/users/sign_in'
+  fill_in "user_email", :with => userClass+"@man.net"
+  fill_in "user_password", :with => 'secretpass'
+  click_button "Log in"
+end
+
 Given(/^User has uploaded PICA data$/) do
   visit '/evaluation/import'
   page.attach_file("data_file", Rails.root + 'spec/fixtures/StatisticsReport.xlsx')
@@ -35,7 +50,7 @@ When(/^User clicks on (.+) link$/) do |button|
   click_link(button, match: :first)
 end
 
-When(/^User fills in ([A-Za-z0-9 ,.]+)$/) do |fill_ins|
+When(/^User fills in ([A-Za-z0-9 ,.@]+)$/) do |fill_ins|
   fill_ins.split(",").each do |fill_in|
     field_name, value = fill_in.strip.split(" with ")
     fill_in(field_name, :with => value)
@@ -55,4 +70,24 @@ end
 
 Then(/^User should see a table of (\d+) data rows$/) do |n|
   expect(page).to have_css("tbody > tr", count: n.to_i)
+end
+
+Then(/^User should not see the (.+) (link|button)$/) do |name, selector|
+  page.should_not have_selector(:link_or_button, name)
+end
+
+Then(/^User should see the (.+) (link|button)$/) do |name, selector|
+  page.should have_selector(:link_or_button, name)
+end
+
+Then(/^User should be on the home page$/) do
+  current_path.should == "/"
+end
+
+Then(/^User should see (.+) as text$/) do |text|
+  page.should have_content(text)
+end
+
+Then(/^User should not see (.+) as text$/) do |text|
+  page.should_not have_content(text)
 end

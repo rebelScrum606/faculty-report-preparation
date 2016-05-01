@@ -3,17 +3,17 @@
     .inner.text-center
       %h1 PICA Utilities
       - if user_signed_in?
-        - if !current_user.has_role? :guest
-          - if !current_user.has_role? :readOnly
-            - if current_user.has_role? :admin
-              %p= link_to "User management panel", admin_index_path, class: "btn btn-primary"
-            %p= link_to "Import evaluation data from PICA", import_evaluation_index_path, class: "btn btn-primary"
-            %p= link_to "Import GPR distribution data", import_gpr_evaluation_index_path, class: "btn btn-primary"
-            %p= link_to "Add Paper Evaluation", new_evaluation_path, class: "btn btn-primary"
+        - if can? :manage, :all
+          %p= link_to "User management panel", admin_index_path, class: "btn btn-primary"
+        -if can? :write, :all
+          %p= link_to "Import evaluation data from PICA", import_evaluation_index_path, class: "btn btn-primary"
+          %p= link_to "Import GPR distribution data", import_gpr_evaluation_index_path, class: "btn btn-primary"
+          %p= link_to "Add Paper Evaluation", new_evaluation_path, class: "btn btn-primary"
+        - if can? :read, :all
           %p= link_to "View Evaluation Data", evaluation_index_path, class: "btn btn-primary"
           %p= link_to "View Missing Data", missing_data_evaluation_index_path, class: "btn btn-primary"
           %p= link_to "Faculty Member Historical Data", instructor_index_path, class: "btn btn-primary"
-        -else 
+        - else
           %p= "please ask an administrator to authorize your account"
         %p= link_to "Sign out", destroy_user_session_path, method: :delete
       - else

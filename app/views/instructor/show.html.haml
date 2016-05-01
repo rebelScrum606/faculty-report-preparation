@@ -18,7 +18,8 @@
       %tr
         %td
           = course_name_for(course_section_group.first)
-          = (course_section_group.first.has_course_name? ? course_section_group.first.course_name : link_to("Add Course Name", new_course_name_path(subject_course: course_section_group.first.subject_course, return_to: instructor_path(@instructor))))
+          - if can? :write, :all
+            = (course_section_group.first.has_course_name? ? course_section_group.first.course_name : link_to("Add Course Name", new_course_name_path(subject_course: course_section_group.first.subject_course, return_to: instructor_path(@instructor))))
         %td= course_section_group.first.term
         %td= compute_total_enrollment(course_section_group)
         %td= compute_mean_student_eval_score(course_section_group).round(2)

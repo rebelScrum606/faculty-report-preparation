@@ -1,9 +1,9 @@
 class Instructor < ActiveRecord::Base
   has_many :evaluations
-  
+
   # needed for rolify
   resourcify
-  
+
   validates :name, presence: true, uniqueness: true
 
   def course_section_groups

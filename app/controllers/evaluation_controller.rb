@@ -3,10 +3,14 @@ class EvaluationController < ApplicationController
   before_action :authenticate_user!
 
   def new
-    @evaluation = Evaluation.new
-    # pluck call must remain :name, :id to have the correct ordering for the select box helper
-    @instructors = Instructor.select_menu_options
-    render layout: "layouts/centered_form"
+    if can? :write, :all
+      @evaluation = Evaluation.new
+      # pluck call must remain :name, :id to have the correct ordering for the select box helper
+      @instructors = Instructor.select_menu_options
+      render layout: "layouts/centered_form"
+    else
+      redirect_to evaluation_index_path
+    end
   end
 
   def create
@@ -27,31 +31,51 @@ class EvaluationController < ApplicationController
   end
 
   def index
-    latest_term = params[:term] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
-    if latest_term.nil?
-      flash[:notice] = "No evaluation data exists yet! Try importing some."
-      redirect_to root_path
+    if can? :read, :all
+      latest_term = params[:term] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
+      if latest_term.nil?
+        flash[:notice] = "No evaluation data exists yet! Try importing some."
+        redirect_to root_path
+      else
+        redirect_to evaluation_path(id: latest_term)
+      end
     else
-      redirect_to evaluation_path(id: latest_term)
+      redirect_to root_path
     end
   end
 
   def show
-    term = params[:id] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
-    @evaluation_groups = Evaluation.no_missing_data.where(term: term).default_sorted_groups
-    @terms = Evaluation.pluck(:term).uniq.sort.reverse
+    if can? :read, :all
+      term = params[:id] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
+      @evaluation_groups = Evaluation.no_missing_data.where(term: term).default_sorted_groups
+      @terms = Evaluation.pluck(:term).uniq.sort.reverse
+    else
+      redirect_to root_path
+    end
   end
 
   def missing_data
-    @evaluation_groups = Evaluation.missing_data.default_sorted_groups
+    if can? :read, :all
+      @evaluation_groups = Evaluation.missing_data.default_sorted_groups
+    else
+      redirect_to root_path
+    end
   end
 
   def import
-    render layout: "layouts/centered_form"
+    if can? :write, :all
+      render layout: "layouts/centered_form"
+    else
+      redirect_to evaluation_index_path
+    end
   end
 
   def import_gpr
-    render layout: "layouts/centered_form"
+    if can? :write, :all
+      render layout: "layouts/centered_form"
+    else
+      redirect_to evaluation_index_path
+    end
   end
 
   def export
@@ -79,35 +103,28 @@ class EvaluationController < ApplicationController
 
   # TODO: clean this up a little but. It should be easy to follow, but it's a little long.
   def upload
-    if can? :write, :all
-      begin
-      if params[:data_file] != nil
-        importer = ::PicaReportImporter.new(params.require(:data_file).tempfile)
-        creation_results = importer.evaluation_hashes.map do |eval_attrs|
-          key_attrs, other_attrs = split_attributes(eval_attrs)
-  
-          Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
-        end
-        num_new_records = creation_results.count { |result| result == true }
-        num_updated_records = creation_results.length - num_new_records
-  
-        flash[:notice] = "#{num_new_records} new evaluations imported. #{num_updated_records} evaluations updated."
-        redirect_to evaluation_index_path
-      else
-        flash[:errors] = "File not attached, please select file to upload"
-        redirect_to import_evaluation_index_path
+    if params[:data_file] != nil
+      importer = ::PicaReportImporter.new(params.require(:data_file).tempfile)
+      creation_results = importer.evaluation_hashes.map do |eval_attrs|
+        key_attrs, other_attrs = split_attributes(eval_attrs)
+
+        Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
       end
-    rescue ::PicaReportImporter::MalformedFileException => ex
-      flash[:errors] = ex.to_s
-      redirect_to import_evaluation_index_path
-    rescue
-      flash[:errors] = "There was an error parsing that XLSX file. Maybe it is corrupt? Please note that only XLSX files are supported, not XLS."
-      redirect_to import_evaluation_index_path
-    end
+      num_new_records = creation_results.count { |result| result == true }
+      num_updated_records = creation_results.length - num_new_records
+
+      flash[:notice] = "#{num_new_records} new evaluations imported. #{num_updated_records} evaluations updated."
+      redirect_to evaluation_index_path
     else
-      flash[:errors] = "You do not have sufficient rights to perform that action"
+      flash[:errors] = "File not attached, please select file to upload"
       redirect_to import_evaluation_index_path
     end
+  rescue ::PicaReportImporter::MalformedFileException => ex
+    flash[:errors] = ex.to_s
+    redirect_to import_evaluation_index_path
+  rescue
+    flash[:errors] = "There was an error parsing that XLSX file. Maybe it is corrupt? Please note that only XLSX files are supported, not XLS."
+    redirect_to import_evaluation_index_path
   end
 
   def upload_gpr

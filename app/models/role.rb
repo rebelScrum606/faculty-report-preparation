@@ -3,9 +3,9 @@ class Role < ActiveRecord::Base
 
   belongs_to :resource,
              :polymorphic => true
- 
+
  def readable_roles
-   {:admin => "Administrator", :readWrite => "Read/Write", 
+   {:admin => "Administrator", :readWrite => "Read/Write",
    :readOnly => "Read Only", :guest => "Guest"}
  end
 
