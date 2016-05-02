@@ -41,6 +41,33 @@ RSpec.describe Evaluation, type: :model do
       Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
       expect(Evaluation.all.count).to eq(1)
     end
+
+    it "converts a string instructor name to an actual instructor" do
+      string_name = "Kevin Sumlin"
+      other_attrs[:instructor] = string_name
+      expect { Evaluation.create_if_needed_and_update(key_attrs, other_attrs) }.to_not raise_exception
+      expect(Evaluation.all.count).to eq(1)
+      expect(Instructor.where(name: string_name).count).to eq(1)
+    end
+
+    it "replaces the instructor if a better name is available" do
+      other_attrs[:instructor] = Instructor.create(name: 'WALTHER B')
+      eval = Evaluation.create(key_attrs.merge(other_attrs))
+
+      other_attrs[:instructor] = 'Brent Walther'
+      Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
+      eval.reload
+      expect(eval.instructor.name).to eq("Brent Walther")
+    end
+
+    it "doesn't clobber the instructor name if it is worse" do
+      eval = Evaluation.create(key_attrs.merge(other_attrs))
+
+      other_attrs[:instructor] = 'WALTHER B'
+      Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
+      eval.reload
+      expect(eval.instructor.name).to eq("Brent Walther")
+    end
   end
 
   describe "#default_sorted_groups" do
