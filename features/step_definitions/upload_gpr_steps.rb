@@ -26,10 +26,10 @@ Then(/^User should only see instructors who were in the PICA data$/) do
 end
 
 Then(/^User should only see instructors who were in the GPR data$/) do
-  page.should have_content("Williams T")
-  page.should have_content("Hurley J")
-  page.should have_content("Welch J")
-  page.should have_content("Daugherity W")
+  page.should have_content("Tiffani Williams")
+  page.should have_content("Joseph Daniel Hurley")
+  page.should have_content("Jennifer Welch")
+  page.should have_content("Walter Daugherity")
   page.should have_no_content("Gooch B")
 end
 

@@ -32,13 +32,17 @@ class Evaluation < ActiveRecord::Base
 
   def self.create_if_needed_and_update(key_attrs, other_attrs)
     if other_attrs[:instructor].is_a?(String) && !other_attrs[:instructor].empty?
-      other_attrs[:instructor_id] = Instructor.where(name: Instructor.normalize_name(other_attrs[:instructor])).first_or_create.id
+      new_instructor = Instructor.where(name: Instructor.normalize_name(other_attrs[:instructor])).first_or_create
     end
     other_attrs.delete(:instructor)
 
     evaluation = where(key_attrs).first_or_initialize
     is_new_record = evaluation.new_record?
     evaluation.save
+
+    if new_instructor && (evaluation.instructor.nil? || evaluation.instructor.name.length < new_instructor.name.length)
+      other_attrs[:instructor_id] = new_instructor.id
+    end
 
     evaluation.update(other_attrs)
 
