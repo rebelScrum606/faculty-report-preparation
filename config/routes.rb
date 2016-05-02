@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get "/admin", to: "admin#index"
+
   devise_for :users
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -16,6 +18,14 @@ Rails.application.routes.draw do
   # Example resource route (maps HTTP verbs to controller actions automatically):
 
   root :to => 'home#index'
+
+  resources :admin do
+    get 'change_to_admin'
+    get 'change_to_guest'
+    get 'change_to_read_only'
+    get 'change_to_read_write'
+    get 'remove_user'
+  end
 
   resources :evaluation do
     get  'import',       on: :collection
