@@ -43,5 +43,8 @@
       = f.text_field :gpr, class: "form-control", placeholder: "e.g. 4.0"
 
   .form-group
-    .col-sm-10.col-sm-offset-2
+    .col-sm-4.col-sm-offset-2
       = f.submit "Edit Evaluation", class: "btn btn-primary"
+
+    .col-sm-6.text-right
+      = link_to "Delete Evaluation", evaluation_path(@evaluation), method: :delete, class: "btn btn-danger"

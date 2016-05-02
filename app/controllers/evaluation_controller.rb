@@ -90,6 +90,14 @@ class EvaluationController < ApplicationController
     render layout: "layouts/centered_form"
   end
 
+  def destroy
+    @evaluation = Evaluation.find(evaluation_id)
+    key_string = @evaluation.key.values.map(&:to_s).join("-")
+    @evaluation.destroy
+    flash[:notice] = "The evaluation for #{key_string} has been deleted."
+    redirect_to evaluation_index_path
+  end
+
   def update
     @evaluation = Evaluation.find(evaluation_id)
     @evaluation, _ = Evaluation.create_if_needed_and_update(@evaluation.key, evaluation_params)

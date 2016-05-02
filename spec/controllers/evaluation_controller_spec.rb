@@ -162,6 +162,15 @@ RSpec.describe EvaluationController, type: :controller do
     end
   end
 
+  describe "DELETE #destroy" do
+    it "deletes the evaluation" do
+      eval = FactoryGirl.create(:evaluation)
+      delete :destroy, id: eval.id
+      expect(Evaluation.count).to eq(0)
+      expect(response).to redirect_to(evaluation_index_path)
+    end
+  end
+
   describe "GET #missing_data" do
     it "shows the evaluation data for the courses with missing data" do
       FactoryGirl.create(:evaluation, course: 210)
