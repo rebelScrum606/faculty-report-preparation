@@ -27,10 +27,11 @@ RSpec.describe EvaluationController, type: :controller do
     end
 
     it "assigns @instructor" do
-      FactoryGirl.create(:instructor)
-      FactoryGirl.create(:instructor)
+      i1 = FactoryGirl.create(:instructor)
+      i2 = FactoryGirl.create(:instructor)
+      FactoryGirl.create(:evaluation, instructor: i1)
       get :new
-      expect(assigns(:instructors).count).to be(3) # number of existing instructors + "New Instructor"
+      expect(assigns(:instructors).count).to be(2) # number of instructors with evaluations + "New Instructor"
     end
   end
 
