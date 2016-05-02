@@ -10,7 +10,8 @@ class InstructorReportExporter
     "No. of Students Enrolled",
     "Mean Student Evaluation Score",
     "Dept Avg Student Evaluation Score for Equivalent Level Courses",
-    "Avg. Numerical Grade Earned by Students"
+    "Avg. Numerical Grade Earned by Students",
+    "Avg. Course Level Numerical Grade"
   ]
 
   def initialize(instructor, evaluation_groups)
@@ -32,6 +33,7 @@ class InstructorReportExporter
         course_data.push(compute_mean_student_eval_score(courses).round(2))
         course_data.push(compute_course_level_average(courses,@evaluation_groups).round(2))
         course_data.push(compute_mean_gpr(courses).try(:round,2))
+        course_data.push(compute_course_level_mean_gpr(courses, @evaluation_groups).try(:round, 2))
         csv << course_data
       end
     end
