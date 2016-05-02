@@ -1,7 +1,15 @@
 %p.text-right
-  .pull-right
-    - if can? :write, :all
-      = link_to "Import PICA Data", import_evaluation_index_path, class: "btn btn-primary"
+  - if can? :write, :all
+    .pull-right
+      .dropdown
+        %a.btn.btn-link.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+          Actions
+          %span.caret
+        %ul.dropdown-menu.dropdown-menu-right
+          %li
+            = link_to "Import PICA Data", import_evaluation_index_path
+          %li
+            = link_to "Import GPR Data", import_gpr_evaluation_index_path
 
 %table.table.table-condensed
   %thead

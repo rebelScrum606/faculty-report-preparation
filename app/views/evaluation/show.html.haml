@@ -1,9 +1,19 @@
 %p.text-right
   .pull-right
-    - if can? :write, :all
-      = link_to "Import PICA Data", import_evaluation_index_path, class: "btn btn-primary"
-    = link_to "Export This Report", export_evaluation_path, class: "btn btn-primary"
-    = link_to "Missing Data", missing_data_evaluation_index_path, class: "btn btn-primary"
+    .dropdown
+      %a.btn.btn-link.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+        Actions
+        %span.caret
+      %ul.dropdown-menu.dropdown-menu-right
+        - if can? :write, :all
+          %li
+            = link_to "Import PICA Data", import_evaluation_index_path
+        %li
+          = link_to "Export This Report", export_evaluation_path
+        %li
+          = link_to "View Missing Data", missing_data_evaluation_index_path
+        %li
+          = link_to "View Course Names", course_name_index_path
   = form_tag evaluation_index_path, method: :get, class: "form-inline" do
     .form-group
       %label{for: "term"} Select Term:
