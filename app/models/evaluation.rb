@@ -52,9 +52,13 @@ class Evaluation < ActiveRecord::Base
     #  - Course (110, 111, 121)
     #  - Instructor (Williams, Hurley)
     #  - First character of section (200s, 500s are grouped together)
-    all.group_by do |eval|
+
+    all.group_by do |eval| # start by grouping them by the groupings above
       eval.term.to_s + eval.subject.to_s + eval.course.to_s + eval.instructor.try(:id).to_s + eval.section.to_s[0]
-    end.sort { |group1, group2| group1.first <=> group2.first }.map(&:last)
+    end
+    .sort { |group1, group2| group1.first <=> group2.first } # sort by their "group by" keys
+    .map(&:last) # only take the groups and not the keys
+    .map { |group| group.sort_by(&:section) } # sort each group by section
   end
 
   def key
