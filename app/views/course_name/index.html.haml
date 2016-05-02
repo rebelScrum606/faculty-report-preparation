@@ -7,4 +7,5 @@
   - @courses.each do |course|
     %tr
       %td= course.subject_course
-      %td= (course.has_course_name? ? course.course_name : link_to("Add Course Name", new_course_name_path(subject_course: course.subject_course, return_to: course_name_index_path)))
+      - if can? :write, :all
+        %td= (course.has_course_name? ? course.course_name : link_to("Add Course Name", new_course_name_path(subject_course: course.subject_course, return_to: course_name_index_path)))

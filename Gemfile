@@ -34,6 +34,10 @@ gem 'pdf-reader-turtletext' # Gem for parsing PDF reports
 
 gem 'rake', group: :test # for TravisCI
 
+gem 'cancancan' # for user class-based access
+
+gem 'rolify' # to define user classes
+
 group :development, :test do
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3'

@@ -2,6 +2,9 @@ class Evaluation < ActiveRecord::Base
   belongs_to :instructor
   validates_associated :instructor
 
+  # needed for rolify
+  resourcify
+
   validates :term, presence: true, format: { with: /\A[12][0-9]{3}[A-Z]\z/,
     message: "must be in the format: xxxxY where xxxx is year and Y is semester letter. Example: 2015C" }
   validates :subject, presence: true, format: { with: /\A[A-Z]{4}\z/,

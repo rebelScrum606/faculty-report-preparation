@@ -1,6 +1,7 @@
 %p.text-right
   .pull-right
-    = link_to "Import PICA Data", import_evaluation_index_path, class: "btn btn-primary"
+    - if can? :write, :all
+      = link_to "Import PICA Data", import_evaluation_index_path, class: "btn btn-primary"
     = link_to "Export This Report", export_evaluation_path, class: "btn btn-primary"
     = link_to "Missing Data", missing_data_evaluation_index_path, class: "btn btn-primary"
   = form_tag evaluation_index_path, method: :get, class: "form-inline" do
@@ -14,7 +15,8 @@
 %table.table.table-condensed
   %thead
     %tr
-      %th Edit
+      - if can? :write, :all
+        %th Edit
       %th Term
       %th Subject
       %th Course
@@ -31,8 +33,9 @@
     - @evaluation_groups.each do |group|
       - group.each do |evaluation|
         %tr
-          %td
-            = link_to "Edit", edit_evaluation_path(evaluation)
+          - if can? :write, :all
+            %td
+              = link_to "Edit", edit_evaluation_path(evaluation)
           %td
             = evaluation.term
           %td

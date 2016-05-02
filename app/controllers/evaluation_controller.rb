@@ -3,9 +3,14 @@ class EvaluationController < ApplicationController
   before_action :authenticate_user!
 
   def new
-    @evaluation = Evaluation.new
-    @instructors = Instructor.select_menu_options
-    render layout: "layouts/centered_form"
+    if can? :write, :all
+      @evaluation = Evaluation.new
+      # pluck call must remain :name, :id to have the correct ordering for the select box helper
+      @instructors = Instructor.select_menu_options
+      render layout: "layouts/centered_form"
+    else
+      redirect_to evaluation_index_path
+    end
   end
 
   def create
@@ -26,31 +31,51 @@ class EvaluationController < ApplicationController
   end
 
   def index
-    latest_term = params[:term] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
-    if latest_term.nil?
-      flash[:notice] = "No evaluation data exists yet! Try importing some."
-      redirect_to root_path
+    if can? :read, :all
+      latest_term = params[:term] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
+      if latest_term.nil?
+        flash[:notice] = "No evaluation data exists yet! Try importing some."
+        redirect_to root_path
+      else
+        redirect_to evaluation_path(id: latest_term)
+      end
     else
-      redirect_to evaluation_path(id: latest_term)
+      redirect_to root_path
     end
   end
 
   def show
-    term = params[:id] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
-    @evaluation_groups = Evaluation.no_missing_data.where(term: term).default_sorted_groups
-    @terms = Evaluation.pluck(:term).uniq.sort.reverse
+    if can? :read, :all
+      term = params[:id] || Evaluation.no_missing_data.pluck(:term).uniq.sort.reverse.first
+      @evaluation_groups = Evaluation.no_missing_data.where(term: term).default_sorted_groups
+      @terms = Evaluation.pluck(:term).uniq.sort.reverse
+    else
+      redirect_to root_path
+    end
   end
 
   def missing_data
-    @evaluation_groups = Evaluation.missing_data.default_sorted_groups
+    if can? :read, :all
+      @evaluation_groups = Evaluation.missing_data.default_sorted_groups
+    else
+      redirect_to root_path
+    end
   end
 
   def import
-    render layout: "layouts/centered_form"
+    if can? :write, :all
+      render layout: "layouts/centered_form"
+    else
+      redirect_to evaluation_index_path
+    end
   end
 
   def import_gpr
-    render layout: "layouts/centered_form"
+    if can? :write, :all
+      render layout: "layouts/centered_form"
+    else
+      redirect_to evaluation_index_path
+    end
   end
 
   def export

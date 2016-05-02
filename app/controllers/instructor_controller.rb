@@ -1,6 +1,7 @@
 class InstructorController < ApplicationController
 
   before_action :authenticate_user!
+  before_action :verify_read
 
   def index
     # return the instructors in sorted order by last name
@@ -22,5 +23,11 @@ class InstructorController < ApplicationController
   private
   def id
     params.require(:id)
+  end
+
+  def verify_read
+    unless can? :read, :all
+      redirect_to root_path
+    end
   end
 end

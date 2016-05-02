@@ -20,3 +20,17 @@ Feature: Manually enter evaluation data from paper evaluations
     And User clicks on the Add Evaluation button
     Then User should see the evaluations page for 2015C
     And User should see a table of 8 data rows
+
+  Scenario: Administrator is able to access the manual evaluation entry screen
+    Given There exists 4 users assigned admin, readWrite, readOnly, and guest as roles
+    And User is of class admin
+    And User is on the home page
+    When User clicks on the Add Paper Evaluation button
+    Then User be on the add evaluation page
+
+  Scenario: Read Write is able to access the manual evaluation entry screen
+    Given There exists 4 users assigned admin, readWrite, readOnly, and guest as roles
+    And User is of class readWrite
+    And User is on the home page
+    When User clicks on the Add Paper Evaluation button
+    Then User be on the add evaluation page

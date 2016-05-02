@@ -19,3 +19,37 @@ Feature: Edit enrollment numbers for classes
     When User is on edit page for user 1
     And User clicks on Edit Evaluation button on edit page
     Then User should be redirected to evaluation index page
+
+  Scenario: Guest is able to access the manual evaluation entry screen
+    Given There exists 4 users assigned admin, readWrite, readOnly, and guest as roles
+    And User is of class guest
+    And User is on the home page
+    Then User should not see the Add Paper Evaluation button
+
+  Scenario: Admin user can click on the edit button
+    Given There exists 4 users assigned admin, readWrite, readOnly, and guest as roles
+    And User is of class admin
+    And There exists 5 evaluation record in the database for instructor xyz
+    When User visits the evaluation page
+    Then User should see a link for Edit for the record
+
+  Scenario: Read/Write user can click on the edit button
+    Given There exists 4 users assigned admin, readWrite, readOnly, and guest as roles
+    And User is of class readWrite
+    And There exists 5 evaluation record in the database for instructor xyz
+    When User visits the evaluation page
+    Then User should see a link for Edit for the record
+
+  Scenario: Read Only user cant see the edit button
+    Given There exists 4 users assigned admin, readWrite, readOnly, and guest as roles
+    And User is of class readOnly
+    And There exists 5 evaluation record in the database for instructor xyz
+    When User visits the evaluation page
+    Then User should not see the edit link
+
+  Scenario: Guest user cant click on the edit button
+    Given There exists 4 users assigned admin, readWrite, readOnly, and guest as roles
+    And User is of class guest
+    And There exists 5 evaluation record in the database for instructor xyz
+    When User visits the evaluation page
+    Then User should be on the home page
