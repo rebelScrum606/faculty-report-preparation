@@ -3,7 +3,7 @@ Feature: Integrate data uploaded from excel files downloaded from PICA website
   Scenario: User navigates to import data page
     Given User is authenticated
     And User is on the home page
-    When User clicks on the Import evaluation data from PICA button
+    When User clicks on the Import PICA evaluation data button
     Then User should be on the import page
 
   Scenario: User uploads excel file
