@@ -61,6 +61,7 @@ class EvaluationController < ApplicationController
 
   def edit
     @evaluation = Evaluation.find(evaluation_id)
+    @instructors = Instructor.select_menu_options
     render layout: "layouts/centered_form"
   end
 

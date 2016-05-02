@@ -22,4 +22,11 @@ module ApplicationHelper
     return nil if gprs.any?(&:nil?)
     gprs.inject(:+) / gprs.size
   end
+
+  def compute_course_level_mean_gpr(group, groups)
+    groups = groups.reject { |g| g.first.course.to_s[0] != group.first.course.to_s[0] }.
+		map {|g| compute_mean_gpr(g) }.reject{ |g| g == nil}
+	return nil if groups.size == 0
+    groups.reduce(:+) / groups.size
+  end
 end

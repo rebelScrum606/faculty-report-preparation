@@ -1,4 +1,6 @@
 %h1 Evaluation data:
+= javascript_include_tag 'evaluation', 'data-turbolinks-track' => true
+
 
 = form_for :evaluation, url: evaluation_index_path, method: :post, html: { class: "form-horizontal" } do |f|
   .form-group
