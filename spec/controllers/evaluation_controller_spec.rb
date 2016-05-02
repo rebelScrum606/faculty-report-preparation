@@ -293,6 +293,15 @@ RSpec.describe EvaluationController, type: :controller do
       post :upload_gpr, data_file: @file, term: '2015C'
       expect(Evaluation.count).to eq(1)
     end
+
+    it "doesn't leave any data blank" do
+      @file = fixture_file_upload('/grade_dist_with_desilva.pdf', 'application/pdf')
+      post :upload_gpr, data_file: @file, term: '2015C'
+      Evaluation.all.each do |eval|
+        expect(eval.instructor).to_not be(nil)
+        expect(eval.gpr).to_not be(nil)
+      end
+    end
   end
 
 

@@ -5,7 +5,7 @@ class GradeDistributionReportImporter
   MATCHES = {
     section: /\A[A-Z]{4}-\d{3}-\d{3}\z/,
     gpr: /\A\d\.\d{3}\z/,
-    instructor: /\A[a-zA-Z]+ [A-Za-z]\z/
+    instructor: /\A([a-zA-Z]+ )+[A-Za-z]\z/
   }
 
   TOLERANCE = 2
