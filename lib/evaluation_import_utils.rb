@@ -14,7 +14,7 @@ class EvaluationImportUtils
         _, is_new = Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
         { status: is_new }
       when 'ENGR'
-        inst = Instructor.where(name: other_attrs[:instructor]).first
+        inst = Instructor.where(name: Instructor.normalize_name(other_attrs[:instructor])).first
         if inst
           _, is_new = Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
           { status: is_new }

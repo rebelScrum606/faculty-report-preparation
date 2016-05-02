@@ -248,7 +248,7 @@ RSpec.describe EvaluationController, type: :controller do
       expect(Evaluation.where(subject: 'CSCE').count).to eq(9)
       expect(Evaluation.where(course: '131').count).to eq(6)
 
-      instructor_brent = Instructor.where(name: 'Brent Walther').first
+      instructor_brent = Instructor.where(name: Instructor.normalize_name('Brent Walther')).first
       expect(Evaluation.where(instructor_id: instructor_brent).count).to eq(3)
     end
   end
@@ -288,7 +288,7 @@ RSpec.describe EvaluationController, type: :controller do
     end
 
     it "creates evaluation records for ENGR classes with CSCE instructors" do
-      FactoryGirl.create(:instructor, name: 'BETTATI R')
+      FactoryGirl.create(:instructor, name: 'Bettati R')
       @file = fixture_file_upload('/grade_dist_with_bettati.pdf', 'application/pdf')
       post :upload_gpr, data_file: @file, term: '2015C'
       expect(Evaluation.count).to eq(1)

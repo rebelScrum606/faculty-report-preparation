@@ -29,7 +29,7 @@ class Evaluation < ActiveRecord::Base
 
   def self.create_if_needed_and_update(key_attrs, other_attrs)
     if other_attrs[:instructor].is_a?(String) && !other_attrs[:instructor].empty?
-      other_attrs[:instructor_id] = Instructor.where(name: other_attrs[:instructor]).first_or_create.id
+      other_attrs[:instructor_id] = Instructor.where(name: Instructor.normalize_name(other_attrs[:instructor])).first_or_create.id
     end
     other_attrs.delete(:instructor)
 
