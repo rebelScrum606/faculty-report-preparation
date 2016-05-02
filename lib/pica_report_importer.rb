@@ -24,7 +24,24 @@ class PicaReportImporter
     @workbook = RubyXL::Parser.parse_buffer(uploaded_file)
   end
 
+  def import
+    @results = EvaluationImportUtils.import(evaluation_hashes)
+  end
+
+  def results
+    num_new_records = @results.count { |result| result[:status] == true }
+    num_updated_records = @results.count { |result| result[:status] == false }
+    num_failed_records = @results.count { |result| result[:status] == :failure }
+
+    { created: num_new_records, updated: num_updated_records, failed: num_failed_records }
+  end
+
+  private
   def evaluation_hashes
+    @evaluation_hashes ||= parse_sheet
+  end
+
+  def parse_sheet
     sheet = @workbook.first
 
     # figure out the columns of the data from the headers

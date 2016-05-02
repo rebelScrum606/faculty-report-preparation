@@ -23,9 +23,9 @@
     = render partial: 'evaluation/enrollment.html.haml', :locals => {:f => f}
 
     #instructor_select_wrapper
-    %label{for: "evaluation_instructor_id", class: "col-sm-2 control-label"} Instructor
+    %label{for: "evaluation_instructor", class: "col-sm-2 control-label"} Instructor
     .col-sm-4
-      %p.form-control-static= link_to @evaluation.instructor.name, instructor_path(id: @evaluation.instructor.id)
+      = f.text_field :instructor, class: "form-control", placeholder: "e.g. Tiffani Williams", value: @evaluation.instructor.try(:name)
 
   = render partial: 'evaluation/items.html.haml', :locals => {:f => f}
 

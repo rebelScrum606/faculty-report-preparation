@@ -63,5 +63,5 @@ Feature: Integrate data uploaded from PDFs containing GPR data
     And User selects GPR file
     And User clicks on the Upload button
     And User clicks on Faculty Member Data link
-    And User clicks on HURLEY J link
+    And User clicks on Hurley J link
     Then User should see a GPR of 2.89

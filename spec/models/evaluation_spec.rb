@@ -18,12 +18,14 @@ RSpec.describe Evaluation, type: :model do
       :item6_mean=>4, :item7_mean=>3.85, :item8_mean=>4.38} }
 
     it "returns true if the record didn't exist" do
-      expect(Evaluation.create_if_needed_and_update(key_attrs, other_attrs)).to be true
+      _, is_new = Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
+      expect(is_new).to be true
     end
 
     it "returns false if the record already existed" do
       Evaluation.create(key_attrs.merge(other_attrs))
-      expect(Evaluation.create_if_needed_and_update(key_attrs, other_attrs)).to be false
+      _, is_new = Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
+      expect(is_new).to be false
     end
 
     it "creates a new record if one does not already exist" do

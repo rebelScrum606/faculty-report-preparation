@@ -4,7 +4,7 @@ RSpec.describe PicaReportImporter do
 
   describe "#evaluation_hashes" do
     it "doesn't have nil attributes anywhere" do
-      hashes = PicaReportImporter.new(mock_file).evaluation_hashes
+      hashes = PicaReportImporter.new(mock_file).send(:evaluation_hashes)
       hashes.each do |hash|
         hash.each do |k, v|
           expect(v).not_to be(nil)
@@ -13,12 +13,12 @@ RSpec.describe PicaReportImporter do
     end
 
     it "should have read in 9 entries" do
-      hashes = PicaReportImporter.new(mock_file).evaluation_hashes
+      hashes = PicaReportImporter.new(mock_file).send(:evaluation_hashes)
       expect(hashes.size).to be(9)
     end
 
     it "each entry should contain 14 columns" do
-      hashes = PicaReportImporter.new(mock_file).evaluation_hashes
+      hashes = PicaReportImporter.new(mock_file).send(:evaluation_hashes)
       hashes.each do |hash|
         expect(hash.size).to be(14)
       end

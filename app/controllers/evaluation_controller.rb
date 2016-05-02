@@ -91,29 +91,23 @@ class EvaluationController < ApplicationController
 
   def update
     @evaluation = Evaluation.find(evaluation_id)
-    @evaluation.update(evaluation_params)
+    @evaluation, _ = Evaluation.create_if_needed_and_update(@evaluation.key, evaluation_params)
     if @evaluation.errors.empty?
       flash[:notice] = "Evaluation updated."
-      redirect_to evaluation_index_path
+      redirect_to evaluation_path(id: @evaluation.term)
     else
       flash[:errors] = @evaluation.errors
       render 'edit'
     end
   end
 
-  # TODO: clean this up a little but. It should be easy to follow, but it's a little long.
   def upload
     if params[:data_file] != nil
       importer = ::PicaReportImporter.new(params.require(:data_file).tempfile)
-      creation_results = importer.evaluation_hashes.map do |eval_attrs|
-        key_attrs, other_attrs = split_attributes(eval_attrs)
+      importer.import
+      results = importer.results
 
-        Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
-      end
-      num_new_records = creation_results.count { |result| result == true }
-      num_updated_records = creation_results.length - num_new_records
-
-      flash[:notice] = "#{num_new_records} new evaluations imported. #{num_updated_records} evaluations updated."
+      flash[:notice] = "#{results[:created]} new evaluations imported. #{results[:updated]} evaluations updated. #{results[:failed]} evaluations were not imported."
       redirect_to evaluation_index_path
     else
       flash[:errors] = "File not attached, please select file to upload"
@@ -128,26 +122,24 @@ class EvaluationController < ApplicationController
   end
 
   def upload_gpr
-    if params[:term] && params[:term].match(/\A[12][0-9]{3}[A-Z]\z/) && params[:data_file] != nil
-      importer = ::GradeDistributionReportImporter.new(params.require(:data_file).tempfile, params[:term])
-      creation_results = importer.grades_hashes.map do |gpr_attrs|
-        key_attrs, other_attrs = split_attributes(gpr_attrs)
-
-        Evaluation.create_if_needed_and_update(key_attrs, other_attrs)
-      end
-
-      num_new_records = creation_results.count { |result| result == true }
-      num_updated_records = creation_results.length - num_new_records
-
-      flash[:notice] = "#{num_new_records} new GPRs imported. #{num_updated_records} evaluation GPRs updated."
-      redirect_to evaluation_index_path
-    elsif params[:data_file] != nil
+    unless params[:term] && params[:term].match(/\A[12][0-9]{3}[A-Z]\z/)
       flash[:errors] = "Term is either missing or in the incorrect format."
       redirect_to import_gpr_evaluation_index_path
-    else
+      return
+    end
+
+    if params[:data_file].nil?
       flash[:errors] = "File not attached, please select file to upload"
       redirect_to import_gpr_evaluation_index_path
+      return
     end
+
+    importer = ::GradeDistributionReportImporter.new(params.require(:data_file).tempfile, params[:term])
+    importer.import
+    results = importer.results
+
+    flash[:notice] = "#{results[:created]} new GPRs imported. #{results[:updated]} evaluation GPRs updated. #{results[:failed]} evaluation GPRs were not imported."
+    redirect_to evaluation_index_path
   rescue PDF::Reader::MalformedPDFError => ex
     flash[:errors] = "There was an error parsing that PDF file. Maybe it is corrupt?"
     redirect_to import_gpr_evaluation_index_path
@@ -156,12 +148,12 @@ class EvaluationController < ApplicationController
   private
   def split_attributes(all_attrs)
       # key attributes are ones for which we should have one unique record for a set of them
-      key_attributes = all_attrs.select { |k,v| [:term, :subject, :course, :section].include?(k.to_sym) }
+      key_attributes = all_attrs.select { |k,v| Evaluation.key_attributes.include?(k.to_sym) }
 
       # other atttributes are ones that should either be assigned or updated
-      other_attributes = all_attrs.select { |k,v| ![:term, :subject, :course, :section].include?(k.to_sym) }
+      other_attributes = all_attrs.reject { |k,v| Evaluation.key_attributes.include?(k.to_sym) }
       if other_attributes[:instructor] && !other_attributes[:instructor].instance_of?(Instructor) && !other_attributes[:instructor].empty?
-        other_attributes[:instructor] = Instructor.where(name: other_attributes[:instructor]).first_or_create
+        other_attributes[:instructor] = Instructor.where(name: Instructor.normalize_name(other_attributes[:instructor])).first_or_create
       elsif other_attributes[:instructor_id] && other_attributes[:instructor_id] != "0"
         other_attributes[:instructor] = Instructor.where(id: other_attributes[:instructor_id]).first
         other_attributes.delete(:instructor_id)
