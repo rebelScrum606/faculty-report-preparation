@@ -58,6 +58,15 @@ RSpec.describe InstructorController, type: :controller do
       get :show, { id: inst.id }
       expect(assigns(:instructor)).to eq(inst)
     end
+
+    it "assigns the instructors course groups in term descending order" do
+      first = FactoryGirl.create(:evaluation, instructor: inst, term: '2015C')
+      second = FactoryGirl.create(:evaluation, instructor: inst, term: '2015B')
+      third = FactoryGirl.create(:evaluation, instructor: inst, term: '2010A')
+
+      get :show, { id: inst.id }
+      expect(assigns(:instructor_course_groups)).to eq([[first], [second], [third]])
+    end
   end
 
   describe "GET #export" do

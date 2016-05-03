@@ -15,7 +15,7 @@
       %th Avg. Numerical Grade Earned by Students
       %th Avg. Course Level Numerical Grade
   %tbody
-    - @instructor.course_section_groups.each do |course_section_group|
+    - @instructor_course_groups.each do |course_section_group|
       %tr
         %td
           = course_name_for(course_section_group.first)
@@ -27,9 +27,9 @@
         %td= course_section_group.first.term
         %td= compute_total_enrollment(course_section_group)
         %td= compute_mean_student_eval_score(course_section_group).round(2)
-        %td= compute_course_level_average(course_section_group, @evaluation_groups).round(2)
+        %td= compute_course_level_average(course_section_group, @all_course_groups).round(2)
         %td= compute_mean_gpr(course_section_group).try(:round, 2)
-        %td= compute_course_level_mean_gpr(course_section_group, @evaluation_groups).try(:round, 2)
+        %td= compute_course_level_mean_gpr(course_section_group, @all_course_groups).try(:round, 2)
 
   %tfoot
   / blank table row

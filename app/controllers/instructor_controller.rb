@@ -11,7 +11,8 @@ class InstructorController < ApplicationController
 
   def show
     @instructor = Instructor.find(id)
-    @evaluation_groups = Evaluation.no_missing_data.default_sorted_groups
+    @instructor_course_groups = @instructor.course_section_groups.sort { |group1, group2| group2.first.term <=> group1.first.term }
+    @all_course_groups = Evaluation.no_missing_data.default_sorted_groups
   end
 
   def export
