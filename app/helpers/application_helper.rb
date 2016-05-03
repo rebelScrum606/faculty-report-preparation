@@ -12,8 +12,10 @@ module ApplicationHelper
   end
 
   def compute_course_level_average(group, groups)
-    groups = groups.reject { |g| g.first.course.to_s[0] != group.first.course.to_s[0] }.
-        map { |g| compute_mean_student_eval_score(g) }
+    groups = groups.reject do |g|
+      g.first.course.to_s[0] != group.first.course.to_s[0] || g.first.term != group.first.term
+    end
+    .map { |g| compute_mean_student_eval_score(g) }
     groups.reduce(:+) / groups.size
   end
 
@@ -24,9 +26,13 @@ module ApplicationHelper
   end
 
   def compute_course_level_mean_gpr(group, groups)
-    groups = groups.reject { |g| g.first.course.to_s[0] != group.first.course.to_s[0] }.
-		map {|g| compute_mean_gpr(g) }.reject{ |g| g == nil}
-	return nil if groups.size == 0
+    groups = groups.reject do |g|
+      g.first.course.to_s[0] != group.first.course.to_s[0] || g.first.term != group.first.term
+    end
+    .map { |g| compute_mean_gpr(g) }
+    .reject(&:nil?)
+
+    return nil if groups.size == 0
     groups.reduce(:+) / groups.size
   end
 end
