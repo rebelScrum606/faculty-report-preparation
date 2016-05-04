@@ -40,7 +40,7 @@ class Evaluation < ActiveRecord::Base
     is_new_record = evaluation.new_record?
     evaluation.save
 
-    if new_instructor && (evaluation.instructor.nil? || evaluation.instructor.name.length < new_instructor.name.length)
+    if new_instructor && (evaluation.instructor.nil? || evaluation.instructor.name.length < new_instructor.name.length || other_attrs[:instructor_id].to_s == "0")
       other_attrs[:instructor_id] = new_instructor.id
     end
 

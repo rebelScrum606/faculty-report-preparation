@@ -106,6 +106,7 @@ class EvaluationController < ApplicationController
       redirect_to evaluation_path(id: @evaluation.term)
     else
       flash[:errors] = @evaluation.errors
+      @instructors = Instructor.select_menu_options
       render 'edit'
     end
   end
@@ -174,7 +175,7 @@ class EvaluationController < ApplicationController
   def evaluation_params
     params.require(:evaluation).permit(:term, :subject, :course, :section, :instructor_id,
       :enrollment, :item1_mean, :item2_mean, :item3_mean, :item4_mean, :item5_mean,
-      :item6_mean, :item7_mean, :item8_mean, :instructor, :gpr)
+      :item6_mean, :item7_mean, :item8_mean, :instructor, :gpr).to_h.symbolize_keys!
   end
 
   def evaluation_id
