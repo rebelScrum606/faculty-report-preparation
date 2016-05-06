@@ -67,7 +67,7 @@ RSpec.describe CourseNameController, type: :controller do
       FactoryGirl.create(:evaluation, subject: "CSCE", course: "121")
       FactoryGirl.create(:evaluation, subject: "CSCE", course: "181")
       get :index
-      expect(assigns(:courses).count.size).to eq(2)
+      expect(assigns(:courses).count).to eq(2)
     end
   end
 end

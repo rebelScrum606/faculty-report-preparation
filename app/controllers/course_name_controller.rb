@@ -22,7 +22,7 @@ class CourseNameController < ApplicationController
   end
 
   def index
-    @courses = Evaluation.group(:subject, :course)
+    @courses = Evaluation.all.group_by { |e| e.subject.to_s + e.course.to_s }.map(&:last).map(&:first)
   end
 
   private
